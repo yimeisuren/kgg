@@ -1,0 +1,22 @@
+logging:
+  level:
+    org:
+      springframework:
+        data:
+          neo4j: DEBUG
+server:
+  port: 8080
+spring:
+  application:
+    name: kgg
+
+  # neo4j 配置
+  neo4j:
+    authentication:
+      username: neo4j
+      password: neo4j
+    uri: bolt://localhost:7687
+  redis:
+    database: 0
+    host: hadoop002
+    port: 6379
