@@ -106,4 +106,17 @@ public interface NodeService {
      * @return
      */
     int deleteNodesByLabel(String label);
+
+    /**
+     * 删除同时具有所有labels的节点
+     *
+     * @param labels
+     * @return
+     */
+    int deleteNodesByLabels(Collection<String> labels);
+
+    /**
+     * TODO: 清空数据库数据, 方便进行测试, 实际使用时需要将其放到工具类中可能会更好
+     */
+    void clearDB();
 }

@@ -47,8 +47,7 @@ public class Node implements Serializable {
     private Map<String, String> attributes = new HashMap<>();
 
     /**
-     * TODO: 所有的出边
-     * <p>
+      *
      * key: 出边的标签label
      * <p>
      * List: 该标签下对应的关系的id集合
@@ -106,10 +105,21 @@ public class Node implements Serializable {
         }
     }
 
-    public void addOutRelationship(String relationLabel, String relationId) {
-        Set<String> labelToIds = this.outs.getOrDefault(relationLabel, new HashSet<>());
-        labelToIds.add(relationId);
-        outs.putIfAbsent(relationLabel, labelToIds);
+    public void addOutRelationship(String label, String id) {
+        Set<String> labelToIds = this.outs.getOrDefault(label, new HashSet<>());
+        labelToIds.add(id);
+        outs.putIfAbsent(label, labelToIds);
+    }
+
+    public void deleteOutRelationship(String label, String id) {
+        Set<String> labelToIds = this.outs.getOrDefault(label, null);
+
+        if (labelToIds != null) {
+            // 如果label下面
+            labelToIds.remove(id);
+            this.outs.put(label, labelToIds);
+        }
+
     }
 
 

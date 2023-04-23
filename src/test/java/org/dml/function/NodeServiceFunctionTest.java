@@ -13,6 +13,25 @@ public class NodeServiceFunctionTest {
 
 
     @Test
+    void addNode10() {
+        Node node = new Node();
+
+        // id没有实际意义, 只为了作为标志, 应该随机生成?
+        node.setId("10");
+
+        // node添加多个标签
+        node.addLabel("战役");
+
+        // name会作为节点的占位符进行显示
+        node.addAttribute("name", "勒班陀战役");
+        node.addAttribute("winner", "神圣同盟舰队");
+        node.addAttribute("time", "1571-10-07");
+
+        nodeService.addNode(node);
+    }
+
+
+    @Test
     void addNode11() {
         Node node = new Node();
 

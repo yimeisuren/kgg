@@ -3,11 +3,14 @@ package org.dml.service.impl;
 import org.dml.entities.Node;
 import org.dml.service.NodeService;
 import org.junit.jupiter.api.Test;
+import org.neo4j.driver.internal.value.StringValue;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 
 @SpringBootTest
@@ -36,34 +39,75 @@ class NodeServiceImplTest {
 
 
     @Test
-    public void findByLabelTest() {
-        List<Node> nodes = nodeService.findNodesByLabel("战役");
-        nodes.forEach(System.out::println);
+    public void addNodesTest() {
+        Node node10 = new Node();
+        // id没有实际意义, 只为了作为标志, 应该随机生成?
+        node10.setId("10");
+        // node添加多个标签
+        node10.addLabel("战役");
+        // name会作为节点的占位符进行显示
+        node10.addAttribute("name", "勒班陀战役");
+        node10.addAttribute("winner", "神圣同盟舰队");
+        node10.addAttribute("time", "1571-10-07");
+
+
+        Node node11 = new Node();
+        node11.setId("11");
+        node11.addLabels("战船", "桨帆船");
+        // TODO: 设计一个默认的name机制, 让用户勾选, 如果不输入name, 那么自动选择第一个label作为其name
+        node11.addAttribute("name", "桨帆船");
+        node11.addAttribute("owner", "神圣同盟舰队");
+        node11.addAttribute("counts", "206");
+
+
+        Node node12 = new Node();
+        node12.setId("12");
+        node12.addLabels("战船", "加莱赛战船");
+        node12.addAttribute("name", "加莱赛战船");
+        node12.addAttribute("owner", "神圣同盟舰队");
+        node12.addAttribute("counts", "6");
+
+        Node node13 = new Node();
+        node13.setId("13");
+        node13.addLabels("战船", "桨帆船");
+        node13.addAttribute("name", "桨帆船");
+        node13.addAttribute("owner", "威尼斯舰队");
+        node13.addAttribute("counts", "109");
+
+        Node node14 = new Node();
+        node14.setId("14");
+        node14.addLabels("战船", "加莱赛战船");
+        node14.addAttribute("name", "加莱赛战船");
+        node14.addAttribute("owner", "威尼斯舰队");
+        node14.addAttribute("counts", "6");
+
+        nodeService.addNodes(Arrays.asList(node10, node11, node12, node13, node14));
     }
 
 
-    @Test
-    void addNodes() {
-        Node node1 = new Node();
-        node1.setId("service_11");
-        node1.addLabel("service");
-        node1.addAttribute("level", "service");
-        node1.addAttribute("name", "张三");
-        node1.addAttribute("age", "18");
-
-
-        Node node2 = new Node();
-        node2.setId("service_12");
-        node2.addLabel("service");
-        node2.addAttribute("level", "service");
-        node2.addAttribute("name", "张三");
-        node2.addAttribute("age", "18");
-
-        nodeService.addNodes(Arrays.asList(node1, node2));
-    }
+    // @Test
+    // void addNodes() {
+    //     Node node1 = new Node();
+    //     node1.setId("service_11");
+    //     node1.addLabel("service");
+    //     node1.addAttribute("level", "service");
+    //     node1.addAttribute("name", "张三");
+    //     node1.addAttribute("age", "18");
+    //
+    //
+    //     Node node2 = new Node();
+    //     node2.setId("service_12");
+    //     node2.addLabel("service");
+    //     node2.addAttribute("level", "service");
+    //     node2.addAttribute("name", "张三");
+    //     node2.addAttribute("age", "18");
+    //
+    //     nodeService.addNodes(Arrays.asList(node1, node2));
+    // }
 
     @Test
     void deleteNodeById() {
+        nodeService.deleteNodeById("10");
         nodeService.deleteNodeById("11");
         nodeService.deleteNodeById("12");
         nodeService.deleteNodeById("13");
@@ -81,14 +125,27 @@ class NodeServiceImplTest {
         System.out.println(counts);
     }
 
+    //TODO: bug
     @Test
     void updateNode() {
-        Node node = new Node();
-        node.setId("service_1");
-        node.addLabel("service");
-        node.addAttribute("name", "李四");
+        Node node = nodeService.findNodeById("10");
+        System.out.println(node);
 
-        nodeService.updateNode(node);
+        Map<String, Set<String>> outs = node.getOuts();
+        Set<String> fightSet = outs.get("参战");
+        Object[] values = fightSet.toArray();
+        for (Object value : values) {
+            StringValue sv = (StringValue) value;
+            String s = sv.asString();
+            System.out.println(s);
+        }
+        System.out.println(fightSet);
+
+        for (String s : fightSet) {
+            System.out.println(s);
+        }
+
+        // nodeService.updateNode(node);
     }
 
     @Test
@@ -116,6 +173,12 @@ class NodeServiceImplTest {
         System.out.println(node);
     }
 
+    @Test
+    public void findByLabelTest() {
+        List<Node> nodes = nodeService.findNodesByLabel("战役");
+        nodes.forEach(System.out::println);
+    }
+
     /**
      * 测试查询一个不存在的节点
      */
@@ -141,5 +204,16 @@ class NodeServiceImplTest {
     void findNodesByLabels() {
         List<Node> nodes = nodeService.findNodesByLabels(Arrays.asList("people", "student"));
         nodes.forEach(System.out::println);
+    }
+
+
+    @Test
+    public void updateNodeTest() {
+
+    }
+
+    @Test
+    public void clearDBTest() {
+        nodeService.clearDB();
     }
 }

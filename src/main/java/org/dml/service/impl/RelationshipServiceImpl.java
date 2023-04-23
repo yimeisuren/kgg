@@ -8,6 +8,7 @@ import org.dml.service.NodeService;
 import org.dml.service.RelationshipService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.SetOperations;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -19,6 +20,9 @@ public class RelationshipServiceImpl implements RelationshipService {
     RedisTemplate<String, String> redisTemplate;
 
     @Autowired
+    SetOperations<String, String> setOperations;
+
+    @Autowired
     RelationshipRepository relationshipRepository;
 
     @Override
@@ -27,11 +31,13 @@ public class RelationshipServiceImpl implements RelationshipService {
         // 但是由于from节点需要添加, 如果直接new, 那么outs列表中最多只会保留一个值, 因为每次new都会创建一个新对象, 其列表会覆盖原有的列表
         Node from = nodeService.findNodeById(fromId);
         from = (from != null) ? from : new Node(fromId);
-        from.addOutRelationship(label, id);
         nodeService.updateNode(from);
 
-        Node to = new Node(toId);
+        Node to = nodeService.findNodeById(toId);
+        to = (to != null) ? to : new Node(toId);
         nodeService.updateNode(to);
+
+        from.addOutRelationship(label, id);
 
         // 开始保存边
         Relationship relationship = new Relationship(id, label, from, to);
@@ -39,5 +45,36 @@ public class RelationshipServiceImpl implements RelationshipService {
         redisTemplate.opsForSet().add(CustomRedisKey.RELATIONSHIP, id);
         redisTemplate.opsForSet().add(CustomRedisKey.RELATIONSHIP_LABEL + label, id);
         relationshipRepository.save(relationship);
+    }
+
+    /**
+     * TODO: 删除的时候是否可以先不删除Redis中对应标签中的id?
+     * 需要在findRelationship中考虑如果查找的是一个不存在的id会有什么影响
+     *
+     * @param id
+     * @return
+     */
+    @Override
+    public int deleteRelationshipById(String id) {
+        Relationship relationship = relationshipRepository.findById(id).get();
+        String label = relationship.getLabel();
+
+        // 删除relationship时需要更新from节点中的out
+        // TODO: out中设计成保存to节点的id还是设计成保存relationship的id需要考虑, 也许保存relationship的id可以提供更强大的功能, 方便后面的子图查询?
+        Node from = relationship.getFrom();
+        // String toId = relationship.getTo().getId();
+        from.deleteOutRelationship(label, id);
+        nodeService.updateNode(from);
+
+        // 删除Neo4j中的节点
+        relationshipRepository.deleteById(id);
+        // 删除Redis中对应标签中的id
+        setOperations.remove(label, id);
+        return 1;
+    }
+
+    @Override
+    public int deleteRelationshipByLabel(String label) {
+        return 0;
     }
 }
