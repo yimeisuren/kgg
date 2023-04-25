@@ -11,6 +11,10 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.SetOperations;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
+
 @Service
 public class RelationshipServiceImpl implements RelationshipService {
     @Autowired
@@ -74,7 +78,35 @@ public class RelationshipServiceImpl implements RelationshipService {
     }
 
     @Override
+    public int deleteRelationshipByIds(String... ids) {
+        for (String id : ids) {
+            deleteRelationshipById(id);
+        }
+        return ids.length;
+    }
+
+    @Override
+    public int deleteRelationshipByIds(Collection<String> ids) {
+        for (String id : ids) {
+            deleteRelationshipById(id);
+        }
+        return ids.size();
+    }
+
+    @Override
     public int deleteRelationshipByLabel(String label) {
-        return 0;
+        Set<String> ids = setOperations.members(label);
+        return deleteRelationshipByIds(ids);
+    }
+
+    @Override
+    public Relationship findRelationshipById(String id) {
+        return relationshipRepository.findById(id).get();
+    }
+
+    @Override
+    public List<Relationship> findRelationshipsByLabel(String label) {
+        Set<String> ids = setOperations.members(CustomRedisKey.RELATIONSHIP_LABEL + label);
+        return relationshipRepository.findAllById(ids);
     }
 }

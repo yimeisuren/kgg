@@ -89,4 +89,14 @@ public class Relationship implements Serializable {
         return this.attributes.get(key);
     }
 
+    @Override
+    public String toString() {
+        return "Relationship{" +
+                "id='" + id + '\'' +
+                ", label='" + label + '\'' +
+                ", fromNodeId=" + from.getId() +
+                ", toNodeId=" + to.getId() +
+                ", attributes=" + attributes +
+                '}';
+    }
 }

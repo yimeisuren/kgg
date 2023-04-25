@@ -9,7 +9,6 @@ server:
 spring:
   application:
     name: kgg
-
   # neo4j 配置
   neo4j:
     authentication:

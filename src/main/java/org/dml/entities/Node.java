@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.neo4j.driver.internal.value.StringValue;
 import org.springframework.data.neo4j.core.schema.CompositeProperty;
 import org.springframework.data.neo4j.core.schema.DynamicLabels;
 import org.springframework.data.neo4j.core.schema.Id;
@@ -47,12 +48,13 @@ public class Node implements Serializable {
     private Map<String, String> attributes = new HashMap<>();
 
     /**
-      *
      * key: 出边的标签label
      * <p>
      * List: 该标签下对应的关系的id集合
      */
     @CompositeProperty
+    // TODO: @CompositeProperty注解中的转换器处理的是Map<String, Object>类型,
+    //  虽然可以得到Set, 但是泛型被擦除, 所以后面获取时表面上得到的是Set<String>, 但实际得到的是Set<StringValue>类型. 为一系列问题埋下隐患
     private Map<String, Set<String>> outs = new HashMap<>();
 
 
@@ -113,10 +115,10 @@ public class Node implements Serializable {
 
     public void deleteOutRelationship(String label, String id) {
         Set<String> labelToIds = this.outs.getOrDefault(label, null);
-
         if (labelToIds != null) {
-            // 如果label下面
-            labelToIds.remove(id);
+            // 由于没有实现对Map<String, Set<String>>类型的自定义转换器,
+            // 因此这里得到的labelToIds实际上是Set<StringValue>类型(泛型擦除), 因此需要将id包装成StringValue类型才能够被正确删除
+            labelToIds.remove(new StringValue(id));
             this.outs.put(label, labelToIds);
         }
 

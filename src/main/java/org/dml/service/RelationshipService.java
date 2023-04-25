@@ -1,5 +1,10 @@
 package org.dml.service;
 
+import org.dml.entities.Relationship;
+
+import java.util.Collection;
+import java.util.List;
+
 public interface RelationshipService {
     /**
      * 添加relation
@@ -19,6 +24,10 @@ public interface RelationshipService {
      */
     int deleteRelationshipById(String id);
 
+    int deleteRelationshipByIds(String... ids);
+
+    int deleteRelationshipByIds(Collection<String> ids);
+
     /**
      * 通过label来删除边
      *
@@ -26,4 +35,10 @@ public interface RelationshipService {
      * @return
      */
     int deleteRelationshipByLabel(String label);
+
+
+    Relationship findRelationshipById(String id);
+
+
+    List<Relationship> findRelationshipsByLabel(String label);
 }

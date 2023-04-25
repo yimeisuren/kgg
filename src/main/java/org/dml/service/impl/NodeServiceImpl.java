@@ -15,7 +15,9 @@ import java.util.*;
 @Service
 public class NodeServiceImpl implements NodeService {
     @Autowired
-    NodeRepository nodeRepository;
+    private NodeRepository nodeRepository;
+
+
 
     @Autowired
     RedisTemplate<String, String> redisTemplate;
@@ -45,13 +47,8 @@ public class NodeServiceImpl implements NodeService {
 
     @Override
     public int addNodes(Collection<Node> nodes) {
-        int result = 0;
-
-        for (Node node : nodes) {
-            result += addNode(node);
-        }
-
-        return result;
+        nodeRepository.saveAll(nodes);
+        return nodes.size();
     }
 
     @Override
@@ -156,6 +153,7 @@ public class NodeServiceImpl implements NodeService {
 
     @Override
     public void clearDB() {
+        redisTemplate.getConnectionFactory().getConnection().flushAll();
         nodeRepository.clearDB();
     }
 }

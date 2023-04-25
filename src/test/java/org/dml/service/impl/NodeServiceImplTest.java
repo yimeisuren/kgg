@@ -126,26 +126,31 @@ class NodeServiceImplTest {
     }
 
     //TODO: bug
+    // 用StringValue替换掉String可以, 但这种解决方法总感觉不伦不类
     @Test
     void updateNode() {
+
         Node node = nodeService.findNodeById("10");
         System.out.println(node);
 
         Map<String, Set<String>> outs = node.getOuts();
+        // TODO: 实际上这里得到的是Set<StringValue>类型的集合,
+        //  1. 原因一: 泛型擦除
+        //  2. 原因二: 没有为@CompositeProperty注解修饰的Map<String, Set<String>>类型的outs添加自定义转换器（这是一种解决方案, 但是不会, 想要参考默认的转换器, 但没看明白）
+        //  3. 为什么不使用Map<String, Set<StringValue>>来修饰outs呢? 这样每次在添加String的时候都需要包装一层, 嫌麻烦
         Set<String> fightSet = outs.get("参战");
-        Object[] values = fightSet.toArray();
-        for (Object value : values) {
-            StringValue sv = (StringValue) value;
-            String s = sv.asString();
+        StringValue[] values = fightSet.toArray(new StringValue[0]);
+        for (StringValue value : values) {
+            String s = value.asString();
             System.out.println(s);
         }
-        System.out.println(fightSet);
+        fightSet.remove(new StringValue("1001"));
 
-        for (String s : fightSet) {
+        for (Object s : fightSet) {
             System.out.println(s);
         }
 
-        // nodeService.updateNode(node);
+        nodeService.updateNode(node);
     }
 
     @Test
@@ -214,6 +219,7 @@ class NodeServiceImplTest {
 
     @Test
     public void clearDBTest() {
+
         nodeService.clearDB();
     }
 }
