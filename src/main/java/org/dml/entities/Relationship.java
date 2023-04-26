@@ -38,6 +38,13 @@ public class Relationship implements Serializable {
     private String label;
 
 
+    /**
+     * TODO: 这里保存节点还是保存节点的id呢?
+     * <p>
+     * 保存节点在图数据库中可以看到节点和节点之间的关系, 虽然也不明显就是.
+     * <p>
+     * 保存节点id的话, 相当于图数据库只是作为了一个简单的key-value键值对的存储, 后面的子图匹配是否需要使用到这种图存储引擎本身管理的复杂的拓扑结构信息
+     */
     @org.springframework.data.neo4j.core.schema.Relationship(type = "from", direction = org.springframework.data.neo4j.core.schema.Relationship.Direction.OUTGOING)
     @NonNull
     private Node from;
@@ -82,4 +89,14 @@ public class Relationship implements Serializable {
         return this.attributes.get(key);
     }
 
+    @Override
+    public String toString() {
+        return "Relationship{" +
+                "id='" + id + '\'' +
+                ", label='" + label + '\'' +
+                ", fromNodeId=" + from.getId() +
+                ", toNodeId=" + to.getId() +
+                ", attributes=" + attributes +
+                '}';
+    }
 }

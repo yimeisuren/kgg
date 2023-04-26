@@ -21,6 +21,10 @@ public interface NodeRepository extends Neo4jRepository<Node, String> {
     List<Node> findNodesByLabelsContains(String label);
 
 
+    @Query("MATCH (n) DETACH DELETE n")
+    void clearDB();
+
+
 
     // /**
     //  * 移除一个实体的标签, 如果这个实体只剩下这一个标签, 则直接删除该实体

@@ -18,5 +18,5 @@ spring:
     uri: bolt://localhost:7687
   redis:
     database: 0
-    host: hadoop002
+    host: 127.0.0.1
     port: 6379

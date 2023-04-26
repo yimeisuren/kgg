@@ -15,10 +15,15 @@ import java.util.*;
 @Service
 public class NodeServiceImpl implements NodeService {
     @Autowired
-    NodeRepository nodeRepository;
+    private NodeRepository nodeRepository;
+
+
 
     @Autowired
     RedisTemplate<String, String> redisTemplate;
+
+    @Autowired
+    SetOperations<String, String> setOperations;
 
     @Autowired
     SetOperations<String, String> opsForSet;
@@ -27,11 +32,13 @@ public class NodeServiceImpl implements NodeService {
     @Override
     public int addNode(Node node) {
         // 将id保存到redis中
-        redisTemplate.opsForSet().add(CustomRedisKey.NODE, node.getId());
+        setOperations.add(CustomRedisKey.NODE, node.getId());
+
         // 将标签label到id的映射保存到redis中
         for (String label : node.getLabels()) {
-            redisTemplate.opsForSet().add(label, node.getId());
+            setOperations.add(label, node.getId());
         }
+
         // 在neo4j中保存节点
         nodeRepository.save(node);
 
@@ -40,13 +47,8 @@ public class NodeServiceImpl implements NodeService {
 
     @Override
     public int addNodes(Collection<Node> nodes) {
-        int result = 0;
-
-        for (Node node : nodes) {
-            result += addNode(node);
-        }
-
-        return result;
+        nodeRepository.saveAll(nodes);
+        return nodes.size();
     }
 
     @Override
@@ -55,10 +57,10 @@ public class NodeServiceImpl implements NodeService {
 
         // redis中删除该节点关于标签到节点的映射
         for (String label : node.getLabels()) {
-            redisTemplate.opsForSet().remove(label, id);
+            setOperations.remove(label, id);
         }
         // redis中删除该节点的id
-        redisTemplate.opsForSet().remove(CustomRedisKey.NODE, id);
+        setOperations.remove(CustomRedisKey.NODE, id);
 
         // neo4j中删除节点
         nodeRepository.deleteById(id);
@@ -86,6 +88,7 @@ public class NodeServiceImpl implements NodeService {
         return result;
     }
 
+    //TODO: 改
     @Override
     public int updateNode(Node node) {
         return addNode(node);
@@ -99,7 +102,7 @@ public class NodeServiceImpl implements NodeService {
     @Override
     public Node findNodeById(String id) {
         //redis中未发现该值, 说明数据库中不存在
-        if (Boolean.FALSE.equals(redisTemplate.opsForSet().isMember(CustomRedisKey.NODE, id))) {
+        if (Boolean.FALSE.equals(setOperations.isMember(CustomRedisKey.NODE, id))) {
             return null;
         }
         return nodeRepository.findById(id).get();
@@ -123,7 +126,7 @@ public class NodeServiceImpl implements NodeService {
     @Override
     public List<Node> findNodesByLabels(Collection<String> labels) {
         // redis中取交集
-        Set<String> ids = redisTemplate.opsForSet().intersect(labels);
+        Set<String> ids = setOperations.intersect(labels);
         ids.forEach(System.out::println);
         return findNodesByIds(ids);
     }
@@ -134,5 +137,23 @@ public class NodeServiceImpl implements NodeService {
         redisTemplate.delete(label);
         nodeRepository.deleteAllById(ids);
         return ids.size();
+    }
+
+
+    @Override
+    public int deleteNodesByLabels(Collection<String> labels) {
+        Set<String> ids = opsForSet.intersect(labels);
+        for (String label : labels) {
+            opsForSet.remove(label, ids);
+        }
+
+        nodeRepository.deleteAllById(ids);
+        return 0;
+    }
+
+    @Override
+    public void clearDB() {
+        redisTemplate.getConnectionFactory().getConnection().flushAll();
+        nodeRepository.clearDB();
     }
 }

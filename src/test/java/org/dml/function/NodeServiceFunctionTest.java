@@ -6,10 +6,33 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+
 @SpringBootTest
 public class NodeServiceFunctionTest {
     @Autowired
     NodeService nodeService;
+
+
+    @Test
+    void addNode10() {
+        Node node = new Node();
+
+        // id没有实际意义, 只为了作为标志, 应该随机生成?
+        node.setId("-1");
+
+        // node添加多个标签
+        node.addLabel("战役");
+
+        // name会作为节点的占位符进行显示
+        node.addAttribute("name", "勒班陀战役");
+        node.addAttribute("winner", "神圣同盟舰队");
+        node.addAttribute("time", "1571-10-07");
+
+        nodeService.addNode(node);
+    }
 
 
     @Test
@@ -77,5 +100,74 @@ public class NodeServiceFunctionTest {
         node.addAttribute("counts", "6");
 
         nodeService.addNode(node);
+    }
+
+     /**
+      * 生成一些没有实际意义的用于性能测试的数据
+      */
+
+
+    @Test
+    void mockData() throws IOException {
+        // TODO: 下面是通过apoc导出生成的数据文件格式, 难道导入还需要进行修改吗?
+        // _id,_labels,attributes.name,attributes.time,attributes.winner,id
+        // 30800,:Node:战役,勒班陀战役1,1571-10-07,神圣同盟舰队,10
+
+        // CALL apoc.import.csv("file:///your_csv_file.csv",
+        // {
+        //    nullValues:[''],
+        //    delimiter:',',
+        //    arrayDelimiter:';',
+        //    stringIds:true,
+        //    create:true,
+        //    dateFormat:'dd/MM/yyyy',
+        //    timeFormat:'HH:mm:ss',
+        //    ignoreDuplicateNodes:true,
+        //    ignoreExtraColumns:true,
+        //    skip:0, limit:-1,
+        //    mapping:{
+        //      column1:{type:'String', array:false, nodeProperty:false},
+        //      column2:{type:'Integer', array:false, nodeProperty:true},
+        //      column3:{type:'Float', array:false, nodeProperty:true},
+        //      column4:{type:'String', array:true, nodeProperty:false}}});
+        File file = new File("D:\\Graph2_programs\\neo4j-community-3.5.11\\import\\node-apoc.csv");
+        FileWriter fileWriter = new FileWriter(file, false);
+        fileWriter.write("id:ID,:LABEL,attributes.name:STRING,attributes.time:STRING,attributes.winner:STRING\n");
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < 1000000; i++) {
+            String s = builder.append(i).append(",")
+                    .append("战役;海战,")
+                    .append("战役").append(i).append(",")
+                    .append("1571-10-07,")
+                    .append("神圣同盟舰队").append("\n")
+                    .toString();
+            fileWriter.write(s);
+            builder.delete(0, builder.capacity());
+        }
+        fileWriter.close();
+    }
+
+    @Test
+    void mockData1() throws IOException {
+        // TODO: 下面是通过apoc导出生成的数据文件格式, 难道导入还需要进行修改吗?
+        // CALL apoc.import.csv([{fileName: 'file:/node-apoc-i.csv', labels: ['Node']}], [], {})
+        for(int i = 0; i < 10 ; ++i) {
+            String path = "D:\\Graph2_programs\\neo4j-community-3.5.11\\import\\node-apoc-" + i + ".csv";
+            File file = new File(path);
+            FileWriter fileWriter = new FileWriter(file, false);
+            fileWriter.write("id:ID,:LABEL,attributes.name:STRING,attributes.time:STRING,attributes.winner:STRING\n");
+            StringBuilder builder = new StringBuilder();
+            for (int j = i * 2000000; j <(i+1) * 2000000; j++) {
+                String s = builder.append(j).append(",")
+                        .append("战役;海战,")
+                        .append("战役").append(j).append(",")
+                        .append("1571-10-07,")
+                        .append("神圣同盟舰队").append("\n")
+                        .toString();
+                fileWriter.write(s);
+                builder.delete(0, builder.capacity());
+            }
+            fileWriter.close();
+        }
     }
 }
