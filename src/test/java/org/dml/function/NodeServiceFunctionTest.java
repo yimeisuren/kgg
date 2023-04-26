@@ -21,7 +21,7 @@ public class NodeServiceFunctionTest {
         Node node = new Node();
 
         // id没有实际意义, 只为了作为标志, 应该随机生成?
-        node.setId("-2");
+        node.setId("1");
 
         // node添加多个标签
         node.addLabel("战役");
@@ -157,7 +157,7 @@ public class NodeServiceFunctionTest {
             FileWriter fileWriter = new FileWriter(file, false);
             fileWriter.write("id:ID,:LABEL,attributes.name:STRING,attributes.time:STRING,attributes.winner:STRING\n");
             StringBuilder builder = new StringBuilder();
-            for (int j = i * 2000000; j <(i+1) * 2000000; j++) {
+            for (int j = i * 1000000; j <(i+1) * 1000000; j++) {
                 String s = builder.append(j).append(",")
                         .append("战役;海战,")
                         .append("战役").append(j).append(",")
