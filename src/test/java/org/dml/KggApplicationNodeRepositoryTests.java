@@ -77,7 +77,7 @@ class KggApplicationNodeRepositoryTests {
      */
     @Test
     public void entityQueryByIdTest() {
-        Optional<Node> optionalEntity = nodeRepository.findById("to");
+        Optional<Node> optionalEntity = nodeRepository.findById("-2");
         Node node = optionalEntity.get();
         System.out.println(node);
     }

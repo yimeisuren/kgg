@@ -21,7 +21,7 @@ public class NodeServiceFunctionTest {
         Node node = new Node();
 
         // id没有实际意义, 只为了作为标志, 应该随机生成?
-        node.setId("-1");
+        node.setId("-2");
 
         // node添加多个标签
         node.addLabel("战役");
@@ -148,8 +148,8 @@ public class NodeServiceFunctionTest {
     }
 
     @Test
-    void mockData1() throws IOException {
-        // TODO: 下面是通过apoc导出生成的数据文件格式, 难道导入还需要进行修改吗?
+    void mockDataForTwentyMillion() throws IOException {
+
         // CALL apoc.import.csv([{fileName: 'file:/node-apoc-i.csv', labels: ['Node']}], [], {})
         for(int i = 0; i < 10 ; ++i) {
             String path = "D:\\Graph2_programs\\neo4j-community-3.5.11\\import\\node-apoc-" + i + ".csv";
