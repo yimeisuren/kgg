@@ -1,6 +1,6 @@
 HELP.md
 target/
-test/
+src/test/
 dailyProgressRecord.md
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**
