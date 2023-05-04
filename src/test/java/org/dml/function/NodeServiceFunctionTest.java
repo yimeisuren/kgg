@@ -21,7 +21,7 @@ public class NodeServiceFunctionTest {
         Node node = new Node();
 
         // id没有实际意义, 只为了作为标志, 应该随机生成?
-        node.setId("1");
+        node.setId("13");
 
         // node添加多个标签
         node.addLabel("战役");
@@ -145,29 +145,5 @@ public class NodeServiceFunctionTest {
             builder.delete(0, builder.capacity());
         }
         fileWriter.close();
-    }
-
-    @Test
-    void mockDataForTwentyMillion() throws IOException {
-
-        // CALL apoc.import.csv([{fileName: 'file:/node-apoc-i.csv', labels: ['Node']}], [], {})
-        for(int i = 0; i < 10 ; ++i) {
-            String path = "D:\\Graph2_programs\\neo4j-community-3.5.11\\import\\node-apoc-" + i + ".csv";
-            File file = new File(path);
-            FileWriter fileWriter = new FileWriter(file, false);
-            fileWriter.write("id:ID,:LABEL,attributes.name:STRING,attributes.time:STRING,attributes.winner:STRING\n");
-            StringBuilder builder = new StringBuilder();
-            for (int j = i * 1000000; j <(i+1) * 1000000; j++) {
-                String s = builder.append(j).append(",")
-                        .append("战役;海战,")
-                        .append("战役").append(j).append(",")
-                        .append("1571-10-07,")
-                        .append("神圣同盟舰队").append("\n")
-                        .toString();
-                fileWriter.write(s);
-                builder.delete(0, builder.capacity());
-            }
-            fileWriter.close();
-        }
     }
 }
