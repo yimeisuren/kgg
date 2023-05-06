@@ -27,9 +27,4 @@ public class Neo4jConfig{
     }
 
 
-    // @Bean
-    // public SessionFactory sessionFactory(){
-    //
-    // }
-
 }

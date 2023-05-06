@@ -15,6 +15,21 @@ public class NodeServiceFunctionTest {
     @Autowired
     NodeService nodeService;
 
+    @Test
+    void addNode10Copy() {
+        Node node = new Node();
+
+        // 测试重复id插入是否成功
+        node.setId("-2");
+
+        // node添加多个标签
+        node.addLabel("战斗");
+
+        // name会作为节点的占位符进行显示
+        node.addAttribute("name", "勒班陀战役plus");
+
+        nodeService.addNode(node);
+    }
 
     @Test
     void addNode10() {
@@ -101,10 +116,10 @@ public class NodeServiceFunctionTest {
 
         nodeService.addNode(node);
     }
-    //
-    // /**
-    //  * 生成一些没有实际意义的用于性能测试的数据
-    //  */
+
+    /**
+     * 生成一些没有实际意义的用于性能测试的数据
+     */
 
 
     @Test
@@ -130,20 +145,23 @@ public class NodeServiceFunctionTest {
         //      column2:{type:'Integer', array:false, nodeProperty:true},
         //      column3:{type:'Float', array:false, nodeProperty:true},
         //      column4:{type:'String', array:true, nodeProperty:false}}});
-        File file = new File("D:\\Coding\\DB\\neo4j-community-3.5.35\\import\\node-apoc-5.csv");
-        FileWriter fileWriter = new FileWriter(file, false);
-        fileWriter.write("id:ID,:LABEL,attributes.name:STRING,attributes.time:STRING,attributes.winner:STRING\n");
-        StringBuilder builder = new StringBuilder();
-        for (int i = 0; i < 20000000; i++) {
-            String s = builder.append(i).append(",")
-                    .append("战役;海战,")
-                    .append("战役").append(i).append(",")
-                    .append("1571-10-07,")
-                    .append("神圣同盟舰队").append("\n")
-                    .toString();
-            fileWriter.write(s);
-            builder.delete(0, builder.capacity());
+        for (int i = 0; i < 10; i++) {
+            String path = "D:\\Coding\\DB\\neo4j-community-3.5.35\\import\\node-apoc-" + i + ".csv";
+            File file = new File(path);
+            FileWriter fileWriter = new FileWriter(file, false);
+            fileWriter.write("id:ID,:LABEL,attributes.name:STRING,attributes.time:STRING,attributes.winner:STRING\n");
+            StringBuilder builder = new StringBuilder();
+            for(int j = i * 2000000; j < (i+1)* 2000000; ++j) {
+                String s = builder.append(j).append(",")
+                        .append("战役;海战,")
+                        .append("战役").append(j).append(",")
+                        .append("1571-10-07,")
+                        .append("神圣同盟舰队").append("\n")
+                        .toString();
+                fileWriter.write(s);
+                builder.delete(0, builder.capacity());
+            }
+            fileWriter.close();
         }
-        fileWriter.close();
     }
 }
