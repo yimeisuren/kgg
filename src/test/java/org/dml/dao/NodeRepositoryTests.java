@@ -1,9 +1,6 @@
-package org.dml;
+package org.dml.dao;
 
-import org.dml.dao.NodeRepository;
-import org.dml.dao.RelationshipRepository;
 import org.dml.entities.Node;
-
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -15,7 +12,7 @@ import java.util.Optional;
 import java.util.Set;
 
 @SpringBootTest
-class KggApplicationNodeRepositoryTests {
+class NodeRepositoryTests {
 
 
     @Autowired
@@ -27,7 +24,6 @@ class KggApplicationNodeRepositoryTests {
 
     @Autowired
     RedisTemplate<String, String> redisTemplate;
-
 
 
 
@@ -122,7 +118,7 @@ class KggApplicationNodeRepositoryTests {
     }
 
     @Test
-    public void removeLabelTest(){
+    public void removeLabelTest() {
     }
 
     // @Test

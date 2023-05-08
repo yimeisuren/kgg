@@ -6,7 +6,7 @@ import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.neo4j.core.Neo4jOperations.*;
+import org.springframework.data.neo4j.core.Neo4jOperations.ExecutableQuery;
 import org.springframework.data.neo4j.core.Neo4jTemplate;
 import org.springframework.data.neo4j.repository.query.QueryFragmentsAndParameters;
 import org.springframework.data.repository.query.FluentQuery;
@@ -30,6 +30,12 @@ public class RelationshipRepositoryImpl implements RelationshipRepository {
     @Autowired
     private Neo4jTemplate neo4jTemplate;
 
+    // TODO: Neo4jEntityInformation<Relationship, String> entityInformation这个东西怎么搞?
+    // extends SimpleNeo4jRepository<Relationship, String>
+    // public RelationshipRepositoryImpl(Neo4jOperations neo4jOperations, Neo4jEntityInformation<Relationship, String> entityInformation) {
+    //     super(neo4jOperations, entityInformation);
+    // }
+
 
     @Override
     public Relationship save(Relationship relationship) {
@@ -45,7 +51,7 @@ public class RelationshipRepositoryImpl implements RelationshipRepository {
     public Optional<Relationship> findById(String id) {
         // TODO: 下面是chatgpt生成的一段代码, 参考
         String name = "";
-        String cypher = "MATCH (p:Person) WHERE p.name = {name} RETURN p";
+        String cypher = "MATCH (p:Person) WHERE p.name = $name RETURN p";
         Map<String, Object> parameters = Collections.singletonMap("name", name);
         QueryFragmentsAndParameters queryFragmentsAndParameters = new QueryFragmentsAndParameters(cypher, parameters);
         ExecutableQuery<Relationship> relationshipExecutableQuery = neo4jTemplate.toExecutableQuery(Relationship.class, queryFragmentsAndParameters);

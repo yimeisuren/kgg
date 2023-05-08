@@ -3,34 +3,48 @@ package org.dml.entities;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import org.springframework.data.neo4j.core.schema.CompositeProperty;
-import org.springframework.data.neo4j.core.schema.Id;
-import org.springframework.data.neo4j.core.schema.Property;
-import org.springframework.data.neo4j.core.schema.RelationshipProperties;
+import org.springframework.data.neo4j.core.schema.*;
 
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * 因为是自定义类型关系, 底层将关系建立为一个节点类型进行存储
  */
 @Data
 @NoArgsConstructor
-@RequiredArgsConstructor
 @RelationshipProperties
 public class RelationshipX implements Serializable {
+
     private static final long serialVersionUID = 1L;
 
-    /**
-     * 关系的唯一标识符
-     * <p>
-     * 一个数据库中只能有一个不相同的id
-     */
-    @Id
-    @NonNull
-    private String id;
+    //TODO: 这里的id是个问题.
+    // 两个方面的问题:
+    // 1. 是否可以不使用@GeneratedValue? 使用@GeneratedValue后会出现重复
+    // 2. 使用String类型的id? 不是什么大事情, 只是Redis中是String类型, 而Neo4j中又保存Long类型, 写代码的时候每次都要转换一下
+    @RelationshipId
+    private Long id;
+
+    public RelationshipX(@NonNull String type, @NonNull NodeX to) {
+        this.type = type;
+        this.to = to;
+        this.toId = to.getId();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        RelationshipX that = (RelationshipX) o;
+        return type.equals(that.type) && fromId.equals(that.fromId) && toId.equals(that.toId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(type, fromId, toId);
+    }
 
     /**
      * 关系的标签
@@ -39,7 +53,13 @@ public class RelationshipX implements Serializable {
      */
     @Property
     @NonNull
-    private String label;
+    private String type;
+
+    @Property
+    private Long fromId;
+
+    @Property
+    private Long toId;
 
 
     /**
@@ -49,14 +69,13 @@ public class RelationshipX implements Serializable {
      * <p>
      * 保存节点id的话, 相当于图数据库只是作为了一个简单的key-value键值对的存储, 后面的子图匹配是否需要使用到这种图存储引擎本身管理的复杂的拓扑结构信息
      */
-    @org.springframework.data.neo4j.core.schema.Relationship(type = "from", direction = org.springframework.data.neo4j.core.schema.Relationship.Direction.OUTGOING)
+    // @StartNode
+    // @NonNull
+    // private NodeX from;
+    //
+    @TargetNode
     @NonNull
-    private Node from;
-
-    @org.springframework.data.neo4j.core.schema.Relationship(type = "to", direction = org.springframework.data.neo4j.core.schema.Relationship.Direction.OUTGOING)
-    @NonNull
-    private Node to;
-
+    private NodeX to;
 
     /**
      * 关系的属性集合
@@ -93,14 +112,4 @@ public class RelationshipX implements Serializable {
         return this.attributes.get(key);
     }
 
-    @Override
-    public String toString() {
-        return "Relationship{" +
-                "id='" + id + '\'' +
-                ", label='" + label + '\'' +
-                ", fromNodeId=" + from.getId() +
-                ", toNodeId=" + to.getId() +
-                ", attributes=" + attributes +
-                '}';
-    }
 }

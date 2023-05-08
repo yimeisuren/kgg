@@ -8,6 +8,7 @@ import org.neo4j.driver.internal.value.StringValue;
 import org.springframework.data.neo4j.core.schema.CompositeProperty;
 import org.springframework.data.neo4j.core.schema.DynamicLabels;
 import org.springframework.data.neo4j.core.schema.Id;
+import org.springframework.data.neo4j.core.schema.Relationship;
 
 import java.io.Serializable;
 import java.util.*;
@@ -19,7 +20,7 @@ import java.util.*;
 @NoArgsConstructor
 @RequiredArgsConstructor
 @Data
-@org.springframework.data.neo4j.core.schema.Node
+@org.springframework.data.neo4j.core.schema.Node(value = "null")
 public class Node implements Serializable {
     /**
      * 网络传输：序列化
@@ -57,6 +58,9 @@ public class Node implements Serializable {
     //  虽然可以得到Set, 但是泛型被擦除, 所以后面获取时表面上得到的是Set<String>, 但实际得到的是Set<StringValue>类型. 为一系列问题埋下隐患
     private Map<String, Set<String>> outs = new HashMap<>();
 
+
+    @org.springframework.data.neo4j.core.schema.Relationship(direction = Relationship.Direction.OUTGOING)
+    private Map<String, List<Relationship>> relationships = new HashMap<>();
 
     /**
      * 为实体添加属性

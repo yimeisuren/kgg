@@ -1,8 +1,6 @@
-package org.dml;
+package org.dml.dao;
 
 import org.dml.constance.CustomRedisKey;
-import org.dml.dao.NodeRepository;
-import org.dml.dao.RelationshipRepository;
 import org.dml.entities.Node;
 import org.dml.entities.Relationship;
 import org.junit.jupiter.api.Test;
