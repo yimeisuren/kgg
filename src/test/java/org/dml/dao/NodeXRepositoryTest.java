@@ -140,16 +140,32 @@ public class NodeXRepositoryTest {
         System.out.println("saveFrom = " + saveFrom);
     }
 
+    @Test
+    public void addNodeTest() {
+        NodeX node1 = new NodeX();
+        node1.addAttribute("name", "node1");
+
+        NodeX node2 = new NodeX();
+        node2.addAttribute("name", "node2");
+
+        NodeX node3 = new NodeX();
+        node3.addAttribute("name", "node3");
+
+        nodeXRepository.save(node1);
+        nodeXRepository.save(node2);
+        nodeXRepository.save(node3);
+    }
+
 
     @Test
     public void addRelationshipTest() {
-        NodeX node4 = nodeXRepository.findById(4L).get();
+        NodeX node4 = nodeXRepository.findById(0L).get();
         System.out.println("node4 = " + node4);
 
-        NodeX node5 = nodeXRepository.findById(5L).get();
+        NodeX node5 = nodeXRepository.findById(20L).get();
         System.out.println("node5 = " + node5);
 
-        NodeX node6 = nodeXRepository.findById(6L).get();
+        NodeX node6 = nodeXRepository.findById(21L).get();
         System.out.println("node6 = " + node6);
 
         RelationshipX r4 = new RelationshipX("R", node4);
@@ -162,6 +178,7 @@ public class NodeXRepositoryTest {
         RelationshipX r6Update = new RelationshipX("R", node6);
         r6Update.addAttribute("name", "rootUpdate");
         // TODO: 期待r6Update这条关系会替换掉原来的, 但实际效果HashSet会保留最初插入的那个对象(对象A和对象B, 在equals层面上对象A和对象B相等, 先后调用对象A和对象B, 实际HashSet中保留的是哪个对象)
+        // 确实如预期所料,
         node4.addRelationship(r5);
         node4.addRelationship(r6);
         node4.addRelationship(r6Update);
@@ -180,11 +197,11 @@ public class NodeXRepositoryTest {
      */
     @Test
     public void save2Test() {
-        NodeX node4 = nodeXRepository.findById(4L).get();
+        NodeX node4 = nodeXRepository.findById(5L).get();
         NodeX node6 = nodeXRepository.findById(6L).get();
 
-        RelationshipX r6Final = new RelationshipX("R", node6);
-        r6Final.addAttribute("name", "r6Final");
+        RelationshipX r6Final = new RelationshipX("Relationship", node6);
+        r6Final.addAttribute("name", "r5-r6");
         node4.addRelationship(r6Final);
 
         nodeXRepository.save(node4);
@@ -192,7 +209,7 @@ public class NodeXRepositoryTest {
 
     @Test
     public void findById3Test() {
-        NodeX from = nodeXRepository.findById(4L).get();
+        NodeX from = nodeXRepository.findById(5L).get();
         Map<String, List<RelationshipX>> relationships = from.getRelationships();
         relationships.forEach((key, values) -> {
             System.out.println("{");
@@ -201,6 +218,8 @@ public class NodeXRepositoryTest {
             values.forEach(System.out::println);
             System.out.println("}");
         });
+
+        System.out.println("from = " + from);
     }
 
     /**

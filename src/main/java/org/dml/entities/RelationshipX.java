@@ -46,6 +46,17 @@ public class RelationshipX implements Serializable {
         return Objects.hash(type, fromId, toId);
     }
 
+    @Override
+    public String toString() {
+        return "RelationshipX{" +
+                "id=" + id +
+                ", type='" + type + '\'' +
+                ", fromId=" + fromId +
+                ", toId=" + toId +
+                ", attributes=" + attributes +
+                '}';
+    }
+
     /**
      * 关系的标签
      * <p>

@@ -136,7 +136,21 @@ public class NodeX implements Serializable {
 
         String relationshipType = relationshipX.getType();
         List<RelationshipX> typeRelationships = relationships.getOrDefault(relationshipType, new ArrayList<>());
-        typeRelationships.add(relationshipX);
+
+        boolean addFlag = true;
+        for (int i = 0; i < typeRelationships.size(); i++) {
+            if (typeRelationships.get(i).equals(relationshipX)) {
+                // 如果待插入的边相等, 那么替换掉原来的边, 不用插入
+                typeRelationships.set(i, relationshipX);
+                // 替换取代添加, addFlag设置为false
+                addFlag = false;
+                break;
+            }
+        }
+
+        if (addFlag) {
+            typeRelationships.add(relationshipX);
+        }
         relationships.put(relationshipType, typeRelationships);
     }
 
@@ -163,6 +177,7 @@ public class NodeX implements Serializable {
 
     @Override
     public String toString() {
+
         return "NodeX{" +
                 "id=" + id +
                 ", labels=" + labels +

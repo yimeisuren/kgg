@@ -12,7 +12,7 @@ public class MockDataFunctionTest {
     private static final int COUNTS = 1000000;
     private static final int FILE_NUMBER = 20;
 
-    private static final int NODE_COUNT = 1_0000_0000;
+    private static final int NODE_COUNT = 2000_0000;
     private static final int RELATIONSHIP_COUNT = 1_0000_0000;
     // apoc方式导入生成的数据
     // CALL apoc.import.csv(
@@ -131,23 +131,23 @@ public class MockDataFunctionTest {
      */
     @Test
     public void mockDataNeo4jAdminImportTest() throws Exception {
-        String nodePath = "D:\\Coding\\DB\\neo4j-community-3.5.35\\import\\node.csv";
-        String relationshipPath = "D:\\Coding\\DB\\neo4j-community-3.5.35\\import\\relationship.csv";
+        String nodePath = "D:\\Coding\\DB\\neo4j-community-3.5.35\\import\\node-3.csv";
+        String relationshipPath = "D:\\Coding\\DB\\neo4j-community-3.5.35\\import\\relationship-3.csv";
         File nodeFile = new File(nodePath);
         File relationshipFile = new File(relationshipPath);
         FileWriter nodeFileWriter = new FileWriter(nodeFile, false);
         FileWriter relationshipFileWriter = new FileWriter(relationshipFile, false);
         nodeFileWriter.write(":ID,:LABEL,attributes.name:STRING,attributes.time:STRING,attributes.winner:STRING\n");
-        relationshipFileWriter.write(":START_ID,:END_ID,:TYPE,label,attributes.year:INT,attributes.month:INT\n");
+        relationshipFileWriter.write(":START_ID,:END_ID,:TYPE,fromId:Long,toId:Long,attributes.name:STRING,type:STRING\n");
 
         StringBuilder builder = new StringBuilder();
 
         for (int i = 0; i < NODE_COUNT; ++i) {
             builder
                     .append(i).append(",")
-                    .append("Node;战役;海战").append(",")
-                    .append("战役").append(i).append(",")
-                    .append("1571-10-07").append(",")
+                    .append("Node").append(",")
+                    .append("node").append(i).append(",")
+                    .append("2000-11-11").append(",")
                     .append("神圣同盟舰队")
                     .append("\n");
             nodeFileWriter.write(builder.toString());
@@ -160,9 +160,10 @@ public class MockDataFunctionTest {
                         .append(i).append(",")
                         .append(i - j).append(",")
                         .append("Relationship").append(",")
-                        .append("Relationship").append(",")
-                        .append("2023").append(",")
-                        .append("5")
+                        .append(i).append(",")
+                        .append(i - j).append(",")
+                        .append("r").append(i).append("-").append("r").append(i - j).append(",")
+                        .append("Relationship")
                         .append("\n");
             }
             relationshipFileWriter.write(builder.toString());
