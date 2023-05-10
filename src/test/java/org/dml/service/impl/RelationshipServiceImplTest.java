@@ -1,5 +1,7 @@
 package org.dml.service.impl;
 
+import org.dml.dao.NodeRepository;
+import org.dml.dao.RelationshipRepository;
 import org.dml.entities.Relationship;
 import org.dml.service.RelationshipService;
 import org.junit.jupiter.api.Test;
@@ -14,28 +16,34 @@ class RelationshipServiceImplTest {
     @Autowired
     RelationshipService relationshipService;
 
+    @Autowired
+    RelationshipRepository relationshipRepository;
+
+    @Autowired
+    NodeRepository nodeRepository;
+
     @Test
     void addRelationship() {
-        relationshipService.addRelationship("node_200", "node_201", "relationship_22", "交流");
-        relationshipService.addRelationship("node_200", "node202", "relationship_23", "交流");
-        relationshipService.addRelationship("node_200", "node_203", "relationship_24", "学习");
+        relationshipService.addRelationship(10L, 10L, "交流");
+        relationshipService.addRelationship(10L, 11L, "交流");
+        relationshipService.addRelationship(10L, 11L,  "学习");
     }
 
     @Test
     public void findRelationshipByIdTest() {
-        Relationship relationship = relationshipService.findRelationshipById("1002");
+        Relationship relationship = relationshipRepository.customizedFindById(59L).orElse(null);
         System.out.println(relationship);
     }
 
     @Test
     public void findRelationshipByIdsTest() {
-        List<Relationship> relationships = relationshipService.findRelationshipsByLabel("参战");
+        List<Relationship> relationships = relationshipService.findRelationshipsByType("参战");
         relationships.forEach(System.out::println);
     }
 
 
     @Test
     public void deleteRelationshipByIdTest() {
-        relationshipService.deleteRelationshipByIds("1001", "1002");
+        relationshipService.deleteRelationshipByIds(10L, 12L);
     }
 }

@@ -12,8 +12,6 @@ import java.util.Set;
 @Configuration
 public class Neo4jConfig{
 
-
-
     /**
      * 针对自定义的类型进行转换, 例如Person类
      *
@@ -23,13 +21,17 @@ public class Neo4jConfig{
     public Neo4jConversions neo4jConversions() {
         Set<GenericConverter> converters = new HashSet<>();
         converters.add(new MyTypeToNeo4jValueConverter());
+        //converters.add(new RelationShipTypeConverter());
         return new Neo4jConversions(converters);
     }
 
+//    @Bean
+//    public ConversionService conversionService() {
+//        DefaultConversionService conversionService = new DefaultConversionService();
+//        conversionService.addConverter(new RelationShipTypeConverter());
+//        return conversionService;
+//    }
 
-    // @Bean
-    // public SessionFactory sessionFactory(){
-    //
-    // }
+
 
 }

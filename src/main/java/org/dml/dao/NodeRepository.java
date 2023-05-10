@@ -8,22 +8,24 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface NodeRepository extends Neo4jRepository<Node, String> {
+public interface NodeRepository extends Neo4jRepository<Node, Long>, CustomizedNodeRepository{
 
 
     /**
      * 从元数据中查找值应该使用 labels() 来进行查询
      *
-     * @param label
-     * @return
+     * @param label 节点应该包含的label
+     * @return 包含label的节点列表
      */
-    @Query("MATCH (n) WHERE $label IN labels(n) RETURN n")
+    @Query("MATCH (n:`Node`) WHERE $label IN labels(n) RETURN n")
     List<Node> findNodesByLabelsContains(String label);
-
 
     @Query("MATCH (n) DETACH DELETE n")
     void clearDB();
 
+
+    @Query("MATCH (n) RETURN count(*)")
+    Long nodeCountAll();
 
 
     // /**
@@ -35,6 +37,4 @@ public interface NodeRepository extends Neo4jRepository<Node, String> {
     //  */
     // @Query("MATCH (n) REMOVE n:$label")
     // boolean removeLabel(String label);
-
-
 }

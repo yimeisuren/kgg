@@ -28,7 +28,7 @@ public interface NodeService {
      * @param id 待删除节点的id
      * @return 成功删除节点的数量
      */
-    int deleteNodeById(String id);
+    int deleteNodeById(Long id);
 
 
     /**
@@ -37,7 +37,7 @@ public interface NodeService {
      * @param ids 待删除节点的id
      * @return 成功删除节点的数量
      */
-    int deleteNodesByIds(Collection<String> ids);
+    int deleteNodesByIds(Collection<Long> ids);
 
     /**
      * 更新节点
@@ -66,7 +66,7 @@ public interface NodeService {
      * @param id 节点的id
      * @return 存在返回对应的节点, 不存在则返回null
      */
-    Node findNodeById(String id);
+    Node findNodeById(Long id);
 
 
     /**
@@ -77,7 +77,7 @@ public interface NodeService {
      * @param ids
      * @return
      */
-    List<Node> findNodesByIds(Collection<String> ids);
+    List<Node> findNodesByIds(Collection<Long> ids);
 
     /**
      * 通过 label 来获取实体
